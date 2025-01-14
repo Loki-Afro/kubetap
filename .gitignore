@@ -20,3 +20,4 @@ site/
 .vim/
 venv/
 coverage.*
+.idea
