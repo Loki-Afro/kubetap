@@ -21,3 +21,4 @@ site/
 venv/
 coverage.*
 .idea
+kubetap
