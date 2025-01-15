@@ -183,13 +183,13 @@ func (m *Mitmproxy) UnreadyEnv() error {
 func createMitmproxyConfigMap(configmapClient corev1.ConfigMapInterface, proxyOpts ProxyOptions) error {
 	// TODO: eventually, we should build a struct and use yaml to marshal this,
 	// but for now we're just doing string concatenation.
-	var mitmproxyConfig []byte
+	var mitmproxyConfig string
 	switch proxyOpts.Mode {
 	case "reverse":
 		if proxyOpts.UpstreamHTTPS {
-			mitmproxyConfig = append([]byte(mitmproxyBaseConfig), []byte("mode: reverse:https://127.0.0.1:"+proxyOpts.UpstreamPort)...)
+			mitmproxyConfig = mitmproxyBaseConfig + "mode:\n  - reverse:https://127.0.0.1:" + proxyOpts.UpstreamPort + "\n"
 		} else {
-			mitmproxyConfig = append([]byte(mitmproxyBaseConfig), []byte("mode: reverse:http://127.0.0.1:"+proxyOpts.UpstreamPort)...)
+			mitmproxyConfig = mitmproxyBaseConfig + "mode:\n  - reverse:http://127.0.0.1:" + proxyOpts.UpstreamPort + "\n"
 		}
 	case "regular":
 		// non-applicable
@@ -206,8 +206,15 @@ func createMitmproxyConfigMap(configmapClient corev1.ConfigMapInterface, proxyOp
 	default:
 		return errors.New("invalid proxy mode: \"" + proxyOpts.Mode + "\"")
 	}
-	cmData := make(map[string][]byte)
-	cmData[mitmproxyConfigFile] = mitmproxyConfig
+
+	// Convert the final configuration string to bytes
+	mitmproxyConfigBytes := []byte(mitmproxyConfig)
+
+	// Create the ConfigMap data
+	cmData := map[string][]byte{
+		mitmproxyConfigFile: mitmproxyConfigBytes,
+	}
+
 	cm := v1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      kubetapConfigMapPrefix + proxyOpts.dplName,
