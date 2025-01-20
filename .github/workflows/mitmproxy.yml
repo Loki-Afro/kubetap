@@ -17,6 +17,10 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Convert Repository Owner to Lowercase
+        id: lowercase
+        run: echo "repository_owner_lowercase=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -29,5 +33,4 @@ jobs:
         with:
           context: ./proxies/mitmproxy
           push: true
-          tags: ghcr.io/${{ github.repository }}/kubetap-mitmproxy:latest
-
+          tags: ghcr.io/${{ env.repository_owner_lowercase }}/${{ github.event.repository.name }}/kubetap-mitmproxy:latest
