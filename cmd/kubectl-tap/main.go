@@ -36,7 +36,7 @@ const (
 	annotationConfigMap          = "kubetap.io/proxy-config"
 	annotationIsTapped           = "kubetap.io/tapped"
 
-	defaultImageHTTP = "quay.io/fancy_schaum/mitm-proxy:11.1"
+	defaultImageHTTP = "ghcr.io/loki-afro/kubetap/kubetap-mitmproxy:latest"
 	defaultImageRaw  = "gcr.io/soluble-oss/kubetap-raw:latest"
 	defaultImageGRPC = "gcr.io/soluble-oss/kubetap-grpc:latest"
 )
