@@ -5,25 +5,29 @@ on:
     - cron: '0 */6 * * *'
   push:
     branches: [master]
-    paths:
-    - 'proxies/mitmproxy'
+#    paths:
+#    - 'proxies/mitmproxy'
 
 jobs:
   kubetap-mitmproxy:
     timeout-minutes: 5
     name: Build and push mitmproxy to GCR
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
-    - 
-      name: Checkout
-      uses: actions/checkout@v2
-    - 
-      name: Push to GCR
-      uses: docker/build-push-action@v1
-      with:
-        path: ./proxies/mitmproxy
-        username: _json_key
-        password: ${{ secrets.SOLUBLE_GCR_OSS_JSON }}
-        registry: gcr.io
-        repository: soluble-oss/kubetap-mitmproxy
-        tags: latest
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Push to GCR
+        uses: docker/build-push-action@v6
+        with:
+          context: ./proxies/mitmproxy
+          push: true
+          tags: ghcr.io/${{ github.repository }}/kubetap-mitmproxy:latest
+
