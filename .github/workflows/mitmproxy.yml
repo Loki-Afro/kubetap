@@ -17,6 +17,9 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Convert Repository Owner to Lowercase
         id: lowercase
         run: echo "repository_owner_lowercase=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
